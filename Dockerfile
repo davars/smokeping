@@ -1,17 +1,13 @@
-FROM debian:jessie
+FROM debian:bullseye
 MAINTAINER David Personette <dperson@gmail.com>
 
 # Install lighttpd and smokeping
 RUN export DEBIAN_FRONTEND='noninteractive' && \
     apt-get update -qq && \
     apt-get install -qqy --no-install-recommends ca-certificates curl dnsutils \
-                echoping fonts-dejavu-core lighttpd procps smokeping ssmtp \
+                fonts-dejavu-core lighttpd procps smokeping ssmtp \
                 $(apt-get -s dist-upgrade|awk '/^Inst.*ecurity/ {print $2}') &&\
     apt-get clean && \
-    echo '+ EchoPingHttp\n\nbinary = /usr/bin/echoping\n' \
-                >>/etc/smokeping/config.d/Probes && \
-    echo '+ EchoPingHttps\n\nbinary = /usr/bin/echoping\n' \
-                >>/etc/smokeping/config.d/Probes && \
     sed -i '/^syslogfacility/s/^/#/' /etc/smokeping/config.d/General && \
     sed -i 's/the \(SmokePing website\) of xxx Company/our \1/' \
                 /etc/smokeping/config.d/General && \
