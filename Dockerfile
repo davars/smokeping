@@ -1,11 +1,11 @@
-FROM debian:bullseye
+FROM ubuntu:26.04
 MAINTAINER David Personette <dperson@gmail.com>
 
 # Install lighttpd and smokeping
 RUN export DEBIAN_FRONTEND='noninteractive' && \
     apt-get update -qq && \
     apt-get install -qqy --no-install-recommends ca-certificates curl dnsutils \
-                fonts-dejavu-core lighttpd procps smokeping ssmtp \
+                fonts-dejavu-core lighttpd media-types procps smokeping ssmtp \
                 $(apt-get -s dist-upgrade|awk '/^Inst.*ecurity/ {print $2}') &&\
     apt-get clean && \
     sed -i '/^syslogfacility/s/^/#/' /etc/smokeping/config.d/General && \
@@ -20,8 +20,6 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
     echo "$header"' += ( "X-Content-Type-Options" => "nosniff" )' >>$conf && \
     echo "$header"' += ( "X-Robots-Tag" => "none" )' >>$conf&& \
     echo "$header"' += ( "X-Frame-Options" => "SAMEORIGIN" )' >>$conf && \
-    echo '\n$HTTP["url"] =~ "^/smokeping($|/)" {' >>$conf && \
-    echo '\tdir-listing.activate = "disable"\n}' >>$conf && \
     echo '\n# redirect to the right Smokeping URI' >>$conf && \
     echo 'url.redirect  = ("^/$" => "/smokeping/smokeping.cgi",' >>$conf && \
     echo '\t\t\t"^/smokeping/?$" => "/smokeping/smokeping.cgi")' >>$conf && \
